@@ -1,0 +1,85 @@
+#!/bin/bash
+
+# Renkli çıktı için renkleri tanımladım
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+# Menü fonksiyonu ile kullanıcının yapacağı işlemi seçmesini istiyoruz
+function show_menu() {
+    echo "Git Yönetim Scriptine Hoş Geldiniz!"
+    echo "1) Durum Kontrol (git status)"
+    echo "2) Commit ve Push (Değişiklikleri Kaydet)"
+    echo "3) Pull (Uzak Repo Güncelle)"
+    echo "4) Git Log (Son Commit'leri Göster)"
+    echo "5) Çıkış"
+    echo -n "Bir seçenek seçin [1-5]: "
+}
+#Kullanıcının seçtiği işleme göre yazının rengi değişiyor 
+#Bende bu işlemler için fonksiyonları kullandım
+
+#Git Status Fonksiyonu
+function git_status() {
+    echo -e "${GREEN}Projenin mevcut durumu:${NC}"
+    git status
+}
+
+# Git Commit ve Push Fonksiyonu
+function git_commit_push() {
+    echo -e "${GREEN}Tüm değişiklikler ekleniyor...${NC}"
+    git add .
+
+    echo -n "Commit mesajını girin: "
+    read commit_message
+
+    if [ -z "$commit_message" ]; then
+        echo -e "${RED}Commit mesajı boş olamaz!${NC}"
+        return
+    fi
+
+    git commit -m "$commit_message"
+    echo -e "${GREEN}Değişiklikler commit edildi!${NC}"
+
+    echo -e "${GREEN}Değişiklikler sunucuya gönderiliyor...${NC}"
+    git push
+}
+
+# Git Pull Fonksiyonu 
+function git_pull() {
+    echo -e "${GREEN}Uzak repodan güncellemeler alınıyor...${NC}"
+    git pull
+}
+
+# Git Log Fonksiyonu
+function git_log() {
+    echo -e "${GREEN}Son commit'ler:${NC}"
+    git log --oneline -5
+}
+
+#Menüden seçilen seçeneğin fonksiyonlarla uyumlu bir şekilde çalışması için bir döngü içine soktum
+while true; do
+    show_menu
+    read choice
+    case $choice in
+        1)
+            git_status
+            ;;
+        2)
+            git_commit_push
+            ;;
+        3)
+            git_pull
+            ;;
+        4)
+            git_log
+            ;;
+        5)
+            echo "Çıkış yapılıyor..."
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Geçersiz seçim! Lütfen 1 ile 5 arasında bir sayı girin.${NC}"
+            ;;
+    esac
+    echo ""
+done
